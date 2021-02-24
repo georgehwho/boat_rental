@@ -27,4 +27,12 @@ class BoatTest < Minitest::Test
     kayak.add_hour
     assert_equal 3, kayak.hours_rented
   end
+
+  def test_it_can_find_total_charge_amount
+    kayak = Boat.new(:kayak, 20)
+    kayak.add_hour
+    kayak.add_hour
+    kayak.add_hour
+    assert_equal 60, kayak.total_charge
+  end
 end

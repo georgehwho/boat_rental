@@ -12,4 +12,8 @@ class Boat
   def add_hour
     @hours_rented += 1
   end
+
+  def total_charge
+    hours_rented * price_per_hour
+  end
 end
