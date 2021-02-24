@@ -25,8 +25,9 @@ class DockTest < Minitest::Test
     expected = {
       kayak_1 => patrick
     }
+    dock.rent(kayak_1, patrick)
 
-    assert_equal patrick, dock.rent(kayak_1, patrick)
+    assert kayak_1.rented
     assert_equal expected, dock.rental_log
   end
 
@@ -175,5 +176,82 @@ class DockTest < Minitest::Test
     }
 
     assert_equal expected_2, dock.charge(sup_1)
+  end
+
+  def test_it_can_log_hours
+    # skip
+    dock = Dock.new("The Rowing Dock", 3)
+    kayak_1 = Boat.new(:kayak, 20)
+    kayak_2 = Boat.new(:kayak, 20)
+    patrick = Renter.new("Patrick Star", "4242424242424242")
+
+    # Rent Boats out to first Renter
+    dock.rent(kayak_1, patrick)
+    dock.rent(kayak_2, patrick)
+
+    # kayak_1 and kayak_2 are rented an additional hour
+    dock.log_hour
+
+    assert_equal 1, kayak_1.hours_rented
+    assert_equal 1, kayak_2.hours_rented
+  end
+
+  def test_it_can_return_a_boat
+    dock = Dock.new("The Rowing Dock", 3)
+    kayak_1 = Boat.new(:kayak, 20)
+    patrick = Renter.new("Patrick Star", "4242424242424242")
+
+    dock.rent(kayak_1, patrick)
+
+    dock.return(kayak_1)
+    refute kayak_1.rented
+  end
+
+  def test_iteration_4_test_suite
+    # skip
+    dock = Dock.new("The Rowing Dock", 3)
+    kayak_1 = Boat.new(:kayak, 20)
+    kayak_2 = Boat.new(:kayak, 20)
+    canoe = Boat.new(:canoe, 25)
+    sup_1 = Boat.new(:standup_paddle_board, 15)
+    sup_2 = Boat.new(:standup_paddle_board, 15)
+    patrick = Renter.new("Patrick Star", "4242424242424242")
+    eugene = Renter.new("Eugene Crabs", "1313131313131313")
+
+    # Rent Boats out to first Renter
+    dock.rent(kayak_1, patrick)
+    dock.rent(kayak_2, patrick)
+
+    # kayak_1 and kayak_2 are rented an additional hour
+    dock.log_hour
+    dock.rent(canoe, patrick)
+
+    # kayak_1, kayak_2, and canoe are rented an additional hour
+    dock.log_hour
+
+    # Revenue should not be generated until boats are returned
+    assert_equal 0, dock.revenue
+
+    dock.return(kayak_1)
+    dock.return(kayak_2)
+    dock.return(canoe)
+
+    # Revenue thus far
+    assert_equal 105, dock.revenue
+
+    # Rent Boats out to a second Renterdock.rent(sup_1, eugene)
+    dock.rent(sup_2, eugene)
+    dock.log_hour
+    dock.log_hour
+    dock.log_hour
+
+    # Any hours rented past the max rental time don't factor into revenue
+    dock.log_hour
+    dock.log_hour
+    dock.return(sup_1)
+    dock.return(sup_2)
+
+    # Total revenue
+    assert_equal 195, dock.revenue
   end
 end
