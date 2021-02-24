@@ -35,4 +35,17 @@ class BoatTest < Minitest::Test
     kayak.add_hour
     assert_equal 60, kayak.total_charge
   end
+
+  def test_it_can_be_checked_out
+    kayak = Boat.new(:kayak, 20)
+    assert_nil kayak.rented
+    assert kayak.check_out
+  end
+
+  def test_it_can_tell_if_returned
+    kayak = Boat.new(:kayak, 20)
+    assert_nil kayak.rented
+    assert kayak.check_out
+    refute kayak.check_in
+  end
 end
